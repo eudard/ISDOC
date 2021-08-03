@@ -1,0 +1,611 @@
+{*contentType application/xml*}
+<?xml version="1.0" encoding="utf-8"?>
+<Invoice xmlns="http://isdoc.cz/namespace/2013" version="6.0.1">
+  <DocumentType>{$doc->DocumentType}</DocumentType>
+  <ID>{$doc->ID}</ID>
+  <UUID>{$doc->UUID}</UUID>
+  <!--GUID, identifikace od emitujícího systému-->
+  {*
+  <EgovFlag>true</EgovFlag>
+  <!-- příznak režimu "kontrolovaného státem" -->
+  <ISDS_ID>5487236455</ISDS_ID>
+  <!-- jednoznačný identifikátor Datové zprávy v systému ISDS -->
+  <FileReference>SPSL_2156/2013</FileReference>
+  <!-- spisová značka, pod kterou byl vypraven tento doklad od emitenta, pokud emitent používá na tuto agendu spisovou službu -->
+  <ReferenceNumber>SPSL_2156/2013-46</ReferenceNumber>
+  <!-- číslo jednací, pod kterým byl vypraven tento doklad od emitenta, pokud emitent používá na tuto agendu spisovou službu -->
+  <EgovClassifiers>
+    <EgovClassifier>548723</EgovClassifier>
+    <EgovClassifier>329178</EgovClassifier>    
+  </EgovClassifiers>
+  <!-- klasifikátory pro výkonové účetnictví státu nebo agendové rozlišení (RPP kódy) --> 
+  *}
+  <IssueDate>{$doc->IssueDate}</IssueDate>{* Datum vystavení­ *}
+  <TaxPointDate>{$doc->TaxPointDate}</TaxPointDate>{* Datum plnění DPH *}
+  <VATApplicable>{$doc->VATApplicable}</VATApplicable> {* Podléhá DPH *}
+
+  
+  <ElectronicPossibilityAgreementReference></ElectronicPossibilityAgreementReference>
+  <!--Označení dokumentu, kterým dal příjemce vystaviteli souhlas s elektronickou formou faktury-->
+  <Note>{$doc->Note}</Note>
+  <LocalCurrencyCode>{$doc->LocalCurrencyCode}</LocalCurrencyCode>{* Lokální měna dokladu, vždy povinná položka *}
+  
+  {*<ForeignCurrencyCode>EUR</ForeignCurrencyCode>*}
+  <!--Cizí měna dokladu, pokud je třeba jí použít. Nepovinná položka-->
+  <CurrRate>25.10</CurrRate>
+  <!--kurz cizí měny, pokud je použita, jinak 1-->
+  <RefCurrRate>1</RefCurrRate>
+  <!--vztažný kurz cizí měny, většinou 1-->
+  {*<Extensions>
+    <!--Jakákoliv struktura hlavičkových uživatelských položek-->   
+    <extenzeH:UserfieldName xmlns:extenzeH="http://anydomain.cz/branch/developer/head">my user data</extenzeH:UserfieldName>
+    <extenzeH:AdditionalHeadDiscount xmlns:extenzeH="http://anydomain.cz/branch/developer/head">10</extenzeH:AdditionalHeadDiscount>
+  </Extensions>*}
+
+
+  <AccountingSupplierParty>
+    <!--Dodavatel, účetní jednotka-->
+    <Party>
+      <PartyIdentification>
+        {*<UserID>315</UserID>
+        <!--Uživatelské číslo firmy/provozovny-->
+        <CatalogFirmIdentification>0</CatalogFirmIdentification>
+        <!--Mezinár.č. firmy/provozovny např.EAN, GLN... -->*}
+        <ID>{$doc->supplier->ID}</ID>
+        <!--IČO firmy-->
+      </PartyIdentification>
+      <PartyName>
+        <Name>{$doc->supplier->Name}</Name>
+      </PartyName>
+      <PostalAddress>
+        <StreetName>{$doc->supplier->StreetName}</StreetName>
+        <BuildingNumber>{$doc->supplier->BuildingNumber}</BuildingNumber>
+        <CityName>{$doc->supplier->CityName}</CityName>
+        <PostalZone>{$doc->supplier->PostalZone}</PostalZone>
+      	<Country>
+      	  <IdentificationCode>{$doc->supplier->CountryCode}</IdentificationCode>
+      	  <Name>{$doc->supplier->CountryName}</Name>
+      	</Country>        
+      </PostalAddress>
+      <PartyTaxScheme n:if="!empty($doc->supplier->CompanyID)">
+        <CompanyID>{$doc->supplier->CompanyID}</CompanyID>
+        <TaxScheme>VAT</TaxScheme>
+      </PartyTaxScheme>
+      {*<RegisterIdentification>
+        <RegisterKeptAt>Městského soudu v Praze</RegisterKeptAt>
+        <RegisterFileRef>odd. B, vl. 4475</RegisterFileRef>
+        <RegisterDate>1996-12-31</RegisterDate>
+      </RegisterIdentification>*}
+      <Contact n:if="!empty($doc->supplier->Contacts)" n:foreach="$doc->supplier->Contacts as $contact">
+        <Name>{$contact->Name}</Name>
+        <Telephone>{$contact->Telephone}</Telephone>
+        <ElectronicMail>{$contact->ElectronicMail}</ElectronicMail>
+      </Contact>
+    </Party>
+  </AccountingSupplierParty>
+
+  <SellerSupplierParty>
+    {* Dodavatel, fakturační adresa *}
+    <Party>
+      <PartyIdentification>
+        {*<UserID>315</UserID>
+        <CatalogFirmIdentification>0</CatalogFirmIdentification>*}
+        <ID>{$doc->supplier->ID}</ID>
+      </PartyIdentification>
+      <PartyName>
+        <Name>{$doc->supplier->Name}</Name>
+      </PartyName>
+      <PostalAddress>
+        <StreetName>{$doc->supplier->StreetName}</StreetName>
+        <BuildingNumber>{$doc->supplier->BuildingNumber}</BuildingNumber>
+        <CityName>{$doc->supplier->CityName}</CityName>
+        <PostalZone>{$doc->supplier->PostalZone}</PostalZone>
+        <Country>
+          <IdentificationCode>{$doc->supplier->CountryCode}</IdentificationCode>
+          <Name>{$doc->supplier->CountryName}</Name>
+        </Country>
+      </PostalAddress>
+      <PartyTaxScheme n:if="!empty($doc->supplier->CompanyID)">
+        <CompanyID>{$doc->supplier->CompanyID}</CompanyID>
+        <TaxScheme>VAT</TaxScheme>
+      </PartyTaxScheme>
+      {*<RegisterIdentification>
+        <RegisterKeptAt>Městského soudu v Praze</RegisterKeptAt>
+        <RegisterFileRef>odd. B, vl. 4475</RegisterFileRef>
+        <RegisterDate>1996-12-31</RegisterDate>
+      </RegisterIdentification>
+      *}
+      <Contact n:if="!empty($doc->supplier->Contacts)" n:foreach="$doc->supplier->Contacts as $contact">
+        <Name>{$contact->Name}</Name>
+        <Telephone>{$contact->Telephone}</Telephone>
+        <ElectronicMail>{$contact->ElectronicMail}</ElectronicMail>
+      </Contact>
+    </Party>
+  </SellerSupplierParty>
+
+  <AccountingCustomerParty>
+    <!--Příjemce, účetní jednotka-->
+    <Party>
+      <PartyIdentification>
+        {*<UserID>000001</UserID>
+        <CatalogFirmIdentification>0</CatalogFirmIdentification>*}
+        <ID>{$doc->customer->ID}</ID>
+      </PartyIdentification>
+      <PartyName>
+        <Name>{$doc->customer->Name}</Name>
+      </PartyName>
+      <PostalAddress>
+        <StreetName>{$doc->customer->StreetName}</StreetName>
+        <BuildingNumber>{$doc->customer->BuildingNumber}</BuildingNumber>
+        <CityName>{$doc->customer->CityName}</CityName>
+        <PostalZone>{$doc->customer->PostalZone}</PostalZone>
+        <Country>
+          <IdentificationCode>{$doc->customer->CountryCode}</IdentificationCode>
+          <Name>{$doc->customer->CountryName}</Name>
+        </Country>
+      </PostalAddress>
+      <PartyTaxScheme n:if="!empty($doc->customer->CompanyID)">
+        <CompanyID>{$doc->customer->CompanyID}</CompanyID>
+        <TaxScheme>VAT</TaxScheme>
+      </PartyTaxScheme>
+      {*<Contact n:if="!empty($doc->customer->Contacts)" n:foreach="$doc->customer->Contacts as $contact">
+        <Name>{$contact->Name}</Name>
+        <Telephone>{$contact->Telephone}</Telephone>
+        <ElectronicMail>{$contact->ElectronicMail}</ElectronicMail>
+      </Contact>*}
+    </Party>
+  </AccountingCustomerParty>
+
+  <BuyerCustomerParty>
+    {* Odběratel, fakturační adresa *}
+    <Party>
+      <PartyIdentification>
+        {*<UserID>000001</UserID>
+        <CatalogFirmIdentification>0</CatalogFirmIdentification>*}
+        <ID>{$doc->customer->ID}</ID>
+      </PartyIdentification>
+      <PartyName>
+        <Name>{$doc->customer->Name}</Name>
+      </PartyName>
+      <PostalAddress>
+        <StreetName>{$doc->customer->StreetName}</StreetName>
+        <BuildingNumber>{$doc->customer->BuildingNumber}</BuildingNumber>
+        <CityName>{$doc->customer->CityName}</CityName>
+        <PostalZone>{$doc->customer->PostalZone}</PostalZone>
+        <Country>
+          <IdentificationCode>{$doc->customer->CountryCode}</IdentificationCode>
+          <Name>{$doc->customer->CountryName}</Name>
+        </Country>
+      </PostalAddress>
+      <PartyTaxScheme n:if="!empty($doc->customer->CompanyID)">
+        <CompanyID>{$doc->customer->CompanyID}</CompanyID>
+        <TaxScheme>VAT</TaxScheme>
+      </PartyTaxScheme>
+      <Contact n:if="!empty($doc->customer->Contacts)" n:foreach="$doc->customer->Contacts as $contact">
+        <Name>{$contact->Name}</Name>
+        <Telephone>{$contact->Telephone}</Telephone>
+        <ElectronicMail>{$contact->ElectronicMail}</ElectronicMail>
+      </Contact>
+    </Party>
+  </BuyerCustomerParty>
+
+  {*<OrderReferences>
+    <!--Nepovinná hlavičková kolekce objednávek pro případnou vazbu -->
+    <OrderReference id="Obj1">
+      <!--Objednávka #1-->
+      <SalesOrderID>OP-111222/2011</SalesOrderID>
+      <!--Vlastní ident. objednávky přijaté u dodavatele-->
+      <ExternalOrderID>OV-123111/2011</ExternalOrderID>
+      <!--Ext.č.obj.přijaté, typicky obj.vydaná odběratele-->
+      <IssueDate>2013-01-03</IssueDate>
+      <!--Datum vystavení objednávky přijaté u dodavatele-->
+      <ISDS_ID>1234578956</ISDS_ID>                                         
+      <!-- ID datové zprávy v ISDS, které vrátilo rozhraní ISDS při prvotním poslání této objednávky. Nepovinné. -->
+      <FileReference>SPSL_838/2013</FileReference>
+      <!-- Spisová značka, pod kterým byla vypravena písemnost Objednávka ve spisové službě objednatele. Nepovinné.-->
+      <ReferenceNumber>SPSL_838/2013-13</ReferenceNumber>
+      <!-- Číslo jednací, pod kterým byla vypravena písemnost Objednávka ve spisové službě objednatele. Nepovinné.-->      
+    </OrderReference>
+    <OrderReference id="Obj2">
+      <!--Objednávka #2-->
+      <SalesOrderID>OP-111223/2011</SalesOrderID>
+      <ExternalOrderID>OV-123112/2011</ExternalOrderID>
+      <IssueDate>2013-01-20</IssueDate>
+    </OrderReference>
+  </OrderReferences>
+  <!--Podrobnější odkazování na OBJ je dále možné v řádcích faktury-->
+  
+  <DeliveryNoteReferences>
+    <!--Nepovinná hlavičková kolekce dodacích listů pro případnou vazbu -->
+    <DeliveryNoteReference id="DL1">
+      <!--DL #1-->
+      <ID>DL-45678/2011</ID>
+      <!--Vlastní ident. DL u dodavatele-->
+      <IssueDate>2013-02-28</IssueDate>
+      <!--Datum vystavení DL dodavatele-->
+    </DeliveryNoteReference>
+  </DeliveryNoteReferences>
+  <!--Podrobnější odkazování na DL je dále možné v řádcích faktury-->
+  
+  <!--Odkaz na původní doklad, který tento aktuální doklad opravuje (jen pro případ DocumentType=2,3,6)-->
+  <OriginalDocumentReferences>
+    <OriginalDocumentReference id="OrigDoc">
+      <ID>FV-111999/2011</ID>
+      <!--ID, lidsky čitelné číslo původního dokladu-->
+      <IssueDate>2013-02-28</IssueDate>
+      <!--datum vystavení původního dokladu-->
+      <UUID>7B4C5BE0-288C-11D2-8E62-004095452B84</UUID>
+      <!--GUID, strojové id pův.dokl-->
+    </OriginalDocumentReference>
+  </OriginalDocumentReferences>  
+
+  <ContractReferences>
+    <ContractReference id="Contract-1">                 <!-- atribut je použit proto, aby v řádcích bylo na co odkázat a nebylo tam třeba opakovat položky, které se již nemění-->
+      <ID>SML-365/15/2013</ID>                          <!-- Identifikace smlouvy lidsky čitelným označením. Povinné.-->
+      <UUID>5C795FFA-7B76-7EFA-22AC-005972155CFA</UUID> <!-- Identifikace smlouvy jejím unikátním id, které vznikne v okamžiku jejího zaevidování v systému OVM vystavitele. Nepovinné.-->
+      <IssueDate>2012-06-18</IssueDate>                 <!-- Datum podpisu smlouvy stranou OVM. Povinné.-->
+      <LastValidDate>2014-06-18</LastValidDate>         <!-- Datum platnosti smlouvy. Tato položka alternuje s elementem <LastValidDateUnbounded/> pro smlouvy s na dobu neurčitou -->
+      <ISDS_ID>6823571942</ISDS_ID>                     <!-- ID datové zprávy v ISDS, které vrátilo rozhraní ISDS při prvotním poslání této smlouvy. Nepovinné.-->
+      <FileReference>SPSL_48/2013</FileReference>       <!-- Spisová značka, pod kterým byla vypravena písemnost Smlouva ve spisové službě objednatele. Nepovinné.-->
+      <ReferenceNumber>SPSL_48/2013-94</ReferenceNumber><!-- Číslo jednací, pod kterým byla vypravena písemnost Smlouva ve spisové službě objednatele. Nepovinné.-->
+    </ContractReference>
+  </ContractReferences>
+
+  <Delivery>
+    <!--Místo určení - adresa dodání­-->
+    <Party>
+      <PartyIdentification>
+        <UserID>000001</UserID>
+        <CatalogFirmIdentification>0</CatalogFirmIdentification>
+        <ID>00006947</ID>
+      </PartyIdentification>
+      <PartyName>
+        <Name>Ministerstvo financí ČR</Name>
+      </PartyName>
+      <PostalAddress>
+        <StreetName>Letenská</StreetName>
+        <BuildingNumber>15</BuildingNumber>
+        <CityName>Praha 1</CityName>
+        <PostalZone>11810</PostalZone>
+        <Country>
+          <IdentificationCode>CZ</IdentificationCode>
+          <Name>Česká republika</Name>
+        </Country>
+      </PostalAddress>
+      <PartyTaxScheme>
+        <CompanyID>CZ00006947</CompanyID>
+        <TaxScheme>VAT</TaxScheme>
+      </PartyTaxScheme>
+      <Contact>
+        <Name>Jan Novák</Name>
+        <Telephone>987654321</Telephone>
+        <ElectronicMail>novotny@mfcr.cz</ElectronicMail>
+      </Contact>
+    </Party>
+  </Delivery>
+  *}
+
+  <InvoiceLines>
+    <!--Kolekce jednotlivých řádků faktury-->
+    <InvoiceLine n:foreach="$doc->lines as $number => $line">
+      <!--Řádek faktury-->
+      <ID>{$number+1}</ID>
+      {*<!--Pořadové číslo řádku faktury-->
+      <OrderReference ref="Obj1">
+        <!--Nepovinný odkaz na objednávku, až na její číslo řádku-->
+        <LineID>1</LineID>
+        <!--Nepovinné číslo řádku objednávky-->
+      </OrderReference>
+      <DeliveryNoteReference ref="DL1">
+        <!--Nepovinný odkaz na dodací list, až na jeho číslo řádku-->
+        <LineID>1</LineID>
+        <!--Nepovinné číslo řádku DL-->
+      </DeliveryNoteReference>
+      <!--Násl. 4 položky jsou nepovinný položkový odkaz na řádek původního dokladu, který je aktuálním dokladem opravován.-->
+      <!--To je možno použít typicky na zpětném dokladu (DocumentType=2,3,6). Další možností je použití těchto 4 položek-->
+      <!--v případě běžné faktury (DocumentType=1) a to u řádeku se zápornou částkou, což je vlastně také způsob dobropisu.-->
+      <OriginalDocumentReference ref="OrigDoc">
+        <LineID>1</LineID>
+        <!--Číslo řádku původního dokladu-->
+      </OriginalDocumentReference>
+      <ContractReference ref="Contract-1">
+        <ParagraphID>3.1.a</ParagraphID>
+        <!-- Identifikace odstavce smlouvy, na základě kterého je fakturováno. Nepovinné. -->
+      </ContractReference>*}
+      <InvoicedQuantity unitCode="Ks">{$line->count}</InvoicedQuantity> {* počet jednotek *}      
+      
+      {*<LineExtensionAmountCurr>0</LineExtensionAmountCurr>
+      <!--celk.cena bez daně na ř. v cizi mene -->*}
+      
+      <LineExtensionAmount>{$line->totalPrice}</LineExtensionAmount>{* celk.cena bez daně na ř. v tuzemske mene *}
+      
+      {*<LineExtensionAmountTaxInclusiveCurr>0</LineExtensionAmountTaxInclusiveCurr>
+      <!-- Celková cena včetně daně na řádku v cizí měně -->*}
+      
+      <LineExtensionAmountTaxInclusive>{$line->totalPriceTaxed}</LineExtensionAmountTaxInclusive> {* Celková cena včetně daně na řádku v tuzemské měně *}
+      
+      <LineExtensionTaxAmount>{$line->totalTax}</LineExtensionTaxAmount> {* částka daně na ř. (v T.M.) *}
+      <UnitPrice>{$line->unitPrice}</UnitPrice>  {* jedn.cena bez daně na ř. v T.M. *}
+      <UnitPriceTaxInclusive>{$line->unitPriceTaxed}</UnitPriceTaxInclusive> {* jedn.cena s daní na ř. v T.M. *}
+      
+      <ClassifiedTaxCategory>
+        <Percent>{$line->taxPercent}</Percent>
+        <!--% DPH, nezávislé na položce Item-->
+        <VATCalculationMethod>0</VATCalculationMethod>
+        <!--Způsob výpočtu DPH, 0-zdola, 1-shora-->
+      </ClassifiedTaxCategory>
+      <Note>{$line->note}</Note>
+      <Item>
+        <Description>{$line->text}</Description>
+        {*<CatalogueItemIdentification>
+          <!--EAN-->
+          <ID>1000000000013</ID>
+        </CatalogueItemIdentification>
+        <SellersItemIdentification>
+          <!--Identifikace zboží dle prodejce-->
+          <ID>10000001</ID>
+        </SellersItemIdentification>
+        <SecondarySellersItemIdentification>
+          <!--Identifikace zboží dle prodejce 2-->
+          <ID>DE555444333</ID>
+        </SecondarySellersItemIdentification>
+        <TertiarySellersItemIdentification>
+          <!--Identifikace zboží dle prodejce 3-->
+          <ID>NAPPAX 458-1028-30</ID>
+        </TertiarySellersItemIdentification>
+        <BuyersItemIdentification>
+          <!--Identifikace zboží dle kupujícího-->
+          <ID>999988887777766666</ID>
+        </BuyersItemIdentification>
+        <StoreBatches>
+          <!--Nepovinná kolekce šarží nebo sériových čísel-->
+          <StoreBatch>
+            <!--Povinná alespoň jedna sekce šarže/sériového čísla-->
+            <Name>Šarže 3A5/2011</Name>
+            <!--Název šarže/Sér.č.-->
+            <Note>Pozor doprodej staré řady parfémů</Note>
+            <!--Poznámka k Š/SČ-->
+            <ExpirationDate>2010-12-31</ExpirationDate>
+            <!--Datum expirace Š/SČ-->
+            <Specification>Dávkování 35</Specification>
+            <!--Specifikace k Š/SČ-->
+            <Quantity unitCode="Ks">80</Quantity>
+            <!--Počet jednotek Š, SČ=1-->
+            <BatchOrSerialNumber>B</BatchOrSerialNumber>
+            <!--B-Šarže, S-Sériové číslo-->
+            <SealSeriesID>NOVÝ 6002212BD NOVÝ</SealSeriesID>
+            <!-- externí číslo/série kolku, pro případ obchodu s chráněnými komoditami. Nepovinná.-->
+          </StoreBatch>
+          <StoreBatch>
+            <Name>Šarže 3A9/2011</Name>
+            <Note>Nová řada</Note>
+            <ExpirationDate>2015-12-31</ExpirationDate>
+            <Specification>Dávkování 35</Specification>
+            <Quantity unitCode="Ks">20</Quantity>
+            <BatchOrSerialNumber>B</BatchOrSerialNumber>
+          </StoreBatch>
+        </StoreBatches>*}
+      </Item>
+      {*<Extensions>
+        <!--Jakákoliv struktura řádkových uživatelských položek-->
+        <extenzeL:UserfieldName xmlns:extenzeL="http://anydomain.cz/branch/developer/line">my user data</extenzeL:UserfieldName>                                                
+      </Extensions>*}
+    </InvoiceLine>
+  </InvoiceLines>
+
+  {*
+  <NonTaxedDeposits>
+    <!--kolekce nedaň.ZL. Projevem je záp.částka PaidDepositsAmount snižující celk.PayableAmount-->
+    <NonTaxedDeposit>
+      <!--informace o konkrétním zaplaceném nedaňovém zálohovém listu-->
+      <ID>ZLV-111888/2011</ID>
+      <!--jméno dokladu, identifikace ZL u mě jako vystavitele-->
+      <VariableSymbol>111888</VariableSymbol>
+      <!--variabilní symbol pod kterým byl zaplacen-->
+      <DepositAmountCurr>1</DepositAmountCurr>
+      <!--kladná částka zálohy v C.M.-->
+      <DepositAmount>25.1</DepositAmount>
+      <!--kladná částka zálohy v T.M.-->
+    </NonTaxedDeposit>
+  </NonTaxedDeposits>
+
+  <TaxedDeposits>
+    <!--kolekce odúčtování zd. záloh. Projevem jsou v sumáři DPH "AlreadyClaimed.." které se odečítají-->
+    <TaxedDeposit>
+      <!--informace o konkrétní částce v sazbě na odúčtovaném daňovém zálohovém listu-->
+      <ID>DZV-111555/2011</ID>
+      <!--jméno dokladu, identifikace daňového ZL u mě jako vystavitele-->
+      <VariableSymbol>111555</VariableSymbol>
+      <!--VS protože teor.může přijít zál.daňová fakt a tu platím bankou-->
+      <TaxableDepositAmountCurr>4.30</TaxableDepositAmountCurr>
+      <!--kl.č. zálohy bez daně v C.M.-->
+      <TaxableDepositAmount>107.93</TaxableDepositAmount>
+      <!--kl.č. zálohy bez daně v T.M.-->
+      <TaxInclusiveDepositAmountCurr>5.20</TaxInclusiveDepositAmountCurr>
+      <!--kl.č zál.sdaní C.M.-->
+      <TaxInclusiveDepositAmount>130.52</TaxInclusiveDepositAmount>
+      <!--kl.č zál.sdaní T.M.-->
+      <ClassifiedTaxCategory>
+        <Percent>19</Percent>
+        <VATCalculationMethod>0</VATCalculationMethod>
+      </ClassifiedTaxCategory>
+    </TaxedDeposit>
+    <TaxedDeposit>
+      <ID>DZV-111666/2011</ID>
+      <VariableSymbol/>
+      <TaxableDepositAmountCurr>8.70</TaxableDepositAmountCurr>
+      <!--kl. částka zál bez daně v C.M.-->
+      <TaxableDepositAmount>218.37</TaxableDepositAmount>
+      <!--kl. částka zál bez daně v T.M.-->
+      <TaxInclusiveDepositAmountCurr>9.50</TaxInclusiveDepositAmountCurr>
+      <!--kl.č zál sdaní  C.M.-->
+      <TaxInclusiveDepositAmount>238.45</TaxInclusiveDepositAmount>
+      <!--kl.č zál sdaní  T.M.-->
+      <ClassifiedTaxCategory>
+        <Percent>9</Percent>
+        <VATCalculationMethod>0</VATCalculationMethod>
+      </ClassifiedTaxCategory>
+    </TaxedDeposit>
+  </TaxedDeposits>
+  *}
+  <TaxTotal>
+    <!--daňová rekapitulace: sumář po sazbách a pak celková daň-->
+    <TaxSubTotal n:foreach="$doc->taxSubTotals as $subtotal">
+      <!--sumář jedné sazby-->
+      {*<TaxableAmountCurr>0</TaxableAmountCurr>
+      <!--základ v sazbě v C.M.-->*}
+      <TaxableAmount>{$subtotal->TaxableAmount}</TaxableAmount> {* <!--částka s daní v sazbě v T.M.--> *}
+      {*<TaxAmountCurr>0</TaxAmountCurr>
+      <!--daň v sazbě v C.M.-->*}
+      <TaxAmount>{$subtotal->TaxAmount}</TaxAmount> {*<!--základ v sazbě v T.M.-->*}
+      {*<TaxInclusiveAmountCurr>0</TaxInclusiveAmountCurr>
+      <!--částka s daní v sazbě v C.M.-->*}
+      <TaxInclusiveAmount>{$subtotal->TaxInclusiveAmount}</TaxInclusiveAmount> {* <!--daň v sazbě v T.M.--> *}
+      {*<AlreadyClaimedTaxableAmountCurr>0</AlreadyClaimedTaxableAmountCurr>
+      <!--na záloze již upl., základ v sazbě v C.M.-->*}
+      <AlreadyClaimedTaxableAmount>0</AlreadyClaimedTaxableAmount>
+      <!--na záloze již uplatněno, základ v sazbě v T.M.-->
+      {*<AlreadyClaimedTaxAmountCurr>0</AlreadyClaimedTaxAmountCurr>
+      <!--na záloze již uplatněno, daň v sazbě v C.M.-->*}
+      <AlreadyClaimedTaxAmount>0</AlreadyClaimedTaxAmount>
+      <!--na záloze již uplatněno, daň v sazbě v T.M.-->
+      {*<AlreadyClaimedTaxInclusiveAmountCurr>0</AlreadyClaimedTaxInclusiveAmountCurr>
+      <!--na záloze již upl., s daní v sazbě v C.M.-->*}
+      <AlreadyClaimedTaxInclusiveAmount>0</AlreadyClaimedTaxInclusiveAmount>
+      <!--na záloze již upl., s daní v sazbě v T.M.-->
+      {*<DifferenceTaxableAmountCurr>0</DifferenceTaxableAmountCurr>
+      <!--diff, zákl C.M.-->*}
+      <DifferenceTaxableAmount>0</DifferenceTaxableAmount>
+      <!--diff, zákl T.M.-->
+      {*<DifferenceTaxAmountCurr>0</DifferenceTaxAmountCurr>
+      <!--diff, daň  C.M.-->*}
+      <DifferenceTaxAmount>0</DifferenceTaxAmount>
+      <!--diff, daň  T.M.-->
+      {*<DifferenceTaxInclusiveAmountCurr>0</DifferenceTaxInclusiveAmountCurr>
+      <!--diff, sdaní C.M.-->*}
+      <DifferenceTaxInclusiveAmount>0</DifferenceTaxInclusiveAmount>
+      <!--diff, sdaní T.M.-->
+      <TaxCategory>
+        <Percent>{$subtotal->Percent}</Percent>{*<!--% daně-->*}
+      </TaxCategory>
+    </TaxSubTotal>
+    {*<TaxAmountCurr>0</TaxAmountCurr>
+    <!--celková daň v C.M. po odečtení odúčtovaných záloh-->*}
+    <TaxAmount>{$doc->totalTax}</TaxAmount>{*<!--celková daň v T.M. po odečtení odúčtovaných záloh-->*}
+  </TaxTotal>
+
+  <LegalMonetaryTotal>
+    <!--celkové částky, vždy bez daně v tuzemské a cizí měně a s daní totéž-->
+    <TaxExclusiveAmount>{$doc->totalPrice}</TaxExclusiveAmount>
+    {*<TaxExclusiveAmountCurr>0</TaxExclusiveAmountCurr>*}
+    <TaxInclusiveAmount>{$doc->totalPriceTaxed}</TaxInclusiveAmount>
+    {*<TaxInclusiveAmountCurr>0</TaxInclusiveAmountCurr>*}
+    <AlreadyClaimedTaxExclusiveAmount>0</AlreadyClaimedTaxExclusiveAmount>
+    <!--sumy na z upl.-->
+    {*<AlreadyClaimedTaxExclusiveAmountCurr>0</AlreadyClaimedTaxExclusiveAmountCurr>*}
+    <AlreadyClaimedTaxInclusiveAmount>0</AlreadyClaimedTaxInclusiveAmount>
+    {*<AlreadyClaimedTaxInclusiveAmountCurr>0</AlreadyClaimedTaxInclusiveAmountCurr>*}
+    <DifferenceTaxExclusiveAmount>0</DifferenceTaxExclusiveAmount>
+    <!--celkové sumy - rozdílů-->
+    {*<DifferenceTaxExclusiveAmountCurr>0</DifferenceTaxExclusiveAmountCurr>*}
+    <DifferenceTaxInclusiveAmount>0</DifferenceTaxInclusiveAmount>
+    {*<DifferenceTaxInclusiveAmountCurr>0</DifferenceTaxInclusiveAmountCurr>*}
+    <PayableRoundingAmount>0</PayableRoundingAmount>
+    <!--zaokrouhl celk.částky v T.M.-->
+    {*<PayableRoundingAmountCurr>0</PayableRoundingAmountCurr>
+    <!--zaokrouhl celk.částky v C.M.-->*}
+    <PaidDepositsAmount>0</PaidDepositsAmount>
+    <!--na nedaňové zál zaplaceno v T.M.-->
+    {*<PaidDepositsAmountCurr>0</PaidDepositsAmountCurr>
+    <!--na nedaňové zál zaplaceno v C.M.-->*}
+    <PayableAmount>{$doc->totalPriceTaxed}</PayableAmount>
+    <!--k zaplacení v T.M.-->
+    {*<PayableAmountCurr>0</PayableAmountCurr>
+    <!--k zaplacení v C.M.-->*}
+  </LegalMonetaryTotal>
+  
+  <PaymentMeans n:if="!empty($doc->payments)">
+    <!--Kolekce plateb. Je možno platit různě a na vícekrát, typicky u plateb na bank.účet-->
+    <!--podporujeme: 10-cash, 20-cheque, 42-Bankaccount, 48-Bankcard, 97-Clearing between partners-->
+    <!--sekce isd:Details obsahuje buď odkaz dokument svázaný s platbou nebo na náležitosti platby na BÚ-->
+    {*<Payment>
+      <!--První příklad - platba hotovostí-->
+      <PaidAmount>0</PaidAmount>
+      <!--částka k zaplacení s přísl.měnou-->
+      <PaymentMeansCode>10</PaymentMeansCode>
+      <!--10 - cash-->
+      <Details>
+        <!--podrobnosti, u hotovosti a ostatních nepovinná možnost zadání -->
+        <DocumentID>PP-455123/2011</DocumentID>
+        <!--svázaného dokladu - zde pokladní účtenky-->
+        <IssueDate>2013-05-27</IssueDate>
+        <!--datum jejího vystavení-->
+      </Details>
+    </Payment>
+    <Payment>
+      <!--Druhý příklad - bankou nadvakrát do různého data splatnosti-->
+      <PaidAmount>0</PaidAmount>
+      <!--částka k zaplacení s přísl.měnou-->
+      <PaymentMeansCode>42</PaymentMeansCode>
+      <!--42 - bank.převodem-->
+      <Details>
+        <!--podrobnosti, u bankovního převodu povinné údaje o věřiteli a platbě-->
+        <PaymentDueDate>2013-03-13</PaymentDueDate>
+        <!--Datum splatnosti-->
+        <ID>1234567890</ID>
+        <!--číslo účtu lokální banky-->
+        <BankCode>0800</BankCode>
+        <!--kód lokální banky-->
+        <Name>Česká spořitelna, a.s.</Name>
+        <!--název lokální banky-->
+        <IBAN>CZ12345678901234567890</IBAN>
+        <!--mezinárodní číslo účtu IBAN-->
+        <BIC>GIBACZPX</BIC>
+        <!--ISO 9362 BIC kód banky, tzv.Swift kód 8 nebo 11 znaků-->
+        <VariableSymbol>111999</VariableSymbol>
+        <!--VS-->
+        <ConstantSymbol>0308</ConstantSymbol>
+        <!--KS nebo tzv.platební titul - pro zahr. platby dle ČNB-->
+        <SpecificSymbol>105512</SpecificSymbol>
+        <!--SS-->
+      </Details>
+    </Payment>*}
+    <Payment n:foreach="$doc->payments as $payment">
+      <PaidAmount>{$payment->PaidAmount}</PaidAmount>
+      <PaymentMeansCode>{$payment->PaymentMeansCode}</PaymentMeansCode>
+      <Details>
+        <PaymentDueDate>{$payment->PaymentDueDate}</PaymentDueDate>
+        <ID>{$payment->ID}</ID>
+        <BankCode>{$payment->BankCode}</BankCode>
+        <Name>{$payment->Name}</Name>
+        <IBAN>{$payment->IBAN}</IBAN>
+        <BIC>{$payment->BIC}</BIC>
+        <VariableSymbol>{$payment->VariableSymbol}</VariableSymbol>
+        <ConstantSymbol>{$payment->ConstantSymbol}</ConstantSymbol>
+        <SpecificSymbol>{$payment->SpecificSymbol}</SpecificSymbol>
+      </Details>
+    </Payment>
+    {*
+    <AlternateBankAccounts>
+      <!--nepovinná kolekce dalších bank.účtů, na které je možno také platit, v ČR časté-->
+      <AlternateBankAccount>
+        <!--má samozřejmě smysl pouze v případě, že alespoň jedna z plateb výše je na BÚ.-->
+        <ID>45798465465465</ID>
+        <!--předpokládá se, že VS, SS a KS se s účtem nemění a definují výše-->
+        <BankCode>0100</BankCode>
+        <Name>Komerční banka, a.s.</Name>
+        <IBAN>CZ1546556565454687987</IBAN>
+        <BIC>KOBACZPX</BIC>
+      </AlternateBankAccount>
+      <AlternateBankAccount>
+        <ID>98654623265464</ID>
+        <BankCode>0300</BankCode>
+        <Name>Československá obchodní banka, a.s.</Name>
+        <IBAN>CZ1546556565454687987</IBAN>
+        <BIC>CEKOCZPP</BIC>
+      </AlternateBankAccount>
+    </AlternateBankAccounts>
+    *}
+  </PaymentMeans>  
+  
+</Invoice>
